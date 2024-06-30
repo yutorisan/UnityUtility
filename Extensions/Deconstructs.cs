@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace UnityUtility.Extensions
 {
@@ -15,6 +16,15 @@ namespace UnityUtility.Extensions
         {
             item1 = x.Item1;
             item2 = x.Item2;
+        }
+
+        public static void Deconstruct(this Vector2 v, out float x, out float y) {
+            x = v.x;
+            y = v.y;
+        }
+        public static void Deconstruct(this Vector2Int v, out int x, out int y) {
+            x = v.x;
+            y = v.y;
         }
     }
 }
