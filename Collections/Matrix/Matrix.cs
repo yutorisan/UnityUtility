@@ -22,11 +22,11 @@ namespace UnityUtility.Collections
         #nullable enable
         public T? Get(MatrixIndex origin, Direction8 direction, int amount = 1)
         {
-            int destinationIndex = GetIndex(origin, direction, amount);
+            var destinationIndex = GetIndex(origin, direction, amount);
             if (!IsValidIndex(destinationIndex)) {
                 return default;
             }
-            return source[destinationIndex];
+            return source[Coord2Index(destinationIndex)];
         }
         #nullable disable
         public bool TryGet(MatrixIndex index, out T value)
@@ -42,9 +42,9 @@ namespace UnityUtility.Collections
 
         public bool TryGet(MatrixIndex origin, Direction8 direction, out T value, int amount = 1)
         {
-            int destinationIndex = GetIndex(origin, direction, amount);
+            var destinationIndex = GetIndex(origin, direction, amount);
             if (IsValidIndex(destinationIndex)) {
-                value = source[destinationIndex];
+                value = source[Coord2Index(destinationIndex)];
                 return true;
             } else {
                 value = default;
@@ -59,26 +59,36 @@ namespace UnityUtility.Collections
         public void Set(T value, MatrixIndex index) => source[Coord2Index(index)] = value;
 
         private int Coord2Index(MatrixIndex index) => Coord2Index(index.Row, index.Column);
-        private int Coord2Index(int row, int column) => row * columnSize + column;
-        private int GetIndex(MatrixIndex origin, Direction8 direction, int amount = 1) {
-            int originIndex = Coord2Index(origin);
-            int indexDiff = direction switch
+        private int Coord2Index(int row, int column)
+        {
+            if (row < 0 || rowSize <= row)       throw new ArgumentOutOfRangeException(nameof(row));
+            if (column < 0 || rowSize <= column) throw new ArgumentOutOfRangeException(nameof(column));
+            return row * columnSize + column;
+        }
+
+        private MatrixIndex GetIndex(MatrixIndex origin, Direction8 direction, int amount = 1) {
+            MatrixIndex newIndex = direction switch
             {
-                Direction8.Up => -columnSize,
-                Direction8.Down => columnSize,
-                Direction8.Left => -1,
-                Direction8.Right => 1,
-                Direction8.RightUp => -columnSize + 1,
-                Direction8.LeftUp => -columnSize - 1,
-                Direction8.RightDown => columnSize + 1,
-                Direction8.LeftDown => columnSize - 1,
+                Direction8.Up => origin.Shift(amount, 0),
+                Direction8.Down => origin.Shift(-amount, 0),
+                Direction8.Left => origin.Shift(0, -amount),
+                Direction8.Right => origin.Shift(0, amount),
+                Direction8.RightUp => origin.Shift(amount, amount),
+                Direction8.LeftUp => origin.Shift(amount, -amount),
+                Direction8.RightDown => origin.Shift(-amount, amount),
+                Direction8.LeftDown => origin.Shift(-amount, -amount),
                 _ => throw new InvalidEnumArgumentException(),
             };
 
-            return originIndex + indexDiff * amount;
+            return newIndex;
         }
         private bool IsValidIndex(int index) => 0 <= index && index < source.Length;
-        private bool IsValidIndex(MatrixIndex index) => IsValidIndex(Coord2Index(index));
+        private bool IsValidIndex(MatrixIndex index)
+        {
+            if (index.Row    < 0 || index.Row    >= this.rowSize)    return false;
+            if (index.Column < 0 || index.Column >= this.columnSize) return false;
+            return IsValidIndex(Coord2Index(index));
+        }
 
         public IEnumerator<T> GetEnumerator() => source.AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
