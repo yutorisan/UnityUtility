@@ -93,7 +93,7 @@ namespace UnityUtility.Collections
         public IEnumerator<T> GetEnumerator() => source.AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public IEnumerable<T> GetDirectionEnumerator(MatrixIndex origin, Direction8 direction)
+        public IEnumerable<T> GetDirectionEnumerable(MatrixIndex origin, Direction8 direction)
         {
             int amount = 1;
             while (TryGet(origin, direction, out T value, amount++))

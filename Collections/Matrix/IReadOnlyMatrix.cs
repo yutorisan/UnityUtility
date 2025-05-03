@@ -25,7 +25,7 @@ namespace UnityUtility.Collections {
         /// <param name="origin">起点座標</param>
         /// <param name="direction">精査方向</param>
         /// <returns></returns>
-        IEnumerable<T> GetDirectionEnumerator(MatrixIndex origin, Direction8 direction);
+        IEnumerable<T> GetDirectionEnumerable(MatrixIndex origin, Direction8 direction);
     }
 
 }
