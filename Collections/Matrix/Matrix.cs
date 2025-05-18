@@ -11,7 +11,7 @@ namespace UnityUtility.Collections
         private T[] source;
         private int columnSize, rowSize;
 
-        public Matrix(int columnSize, int rowSize) {
+        public Matrix(int rowSize, int columnSize) {
             this.columnSize = columnSize;
             this.rowSize = rowSize;
             source = new T[columnSize * rowSize];
@@ -62,7 +62,7 @@ namespace UnityUtility.Collections
         private int Coord2Index(int row, int column)
         {
             if (row < 0 || rowSize <= row)       throw new ArgumentOutOfRangeException(nameof(row));
-            if (column < 0 || rowSize <= column) throw new ArgumentOutOfRangeException(nameof(column));
+            if (column < 0 || columnSize <= column) throw new ArgumentOutOfRangeException(nameof(column));
             return row * columnSize + column;
         }
 
