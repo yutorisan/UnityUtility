@@ -8,8 +8,9 @@ using UnityUtility.Enums;
 namespace UnityUtility.Collections
 {
     public class Matrix<T> : IMatrix<T> {
-        private T[] source;
-        private int columnSize, rowSize;
+        private readonly T[] source;
+        private readonly int columnSize;
+        private readonly int rowSize;
 
         public Matrix(int rowSize, int columnSize) {
             this.columnSize = columnSize;
@@ -17,6 +18,7 @@ namespace UnityUtility.Collections
             source = new T[columnSize * rowSize];
         }
 
+        #region public
         public T Get(int row, int column) => source[Coord2Index(row, column)];
         public T Get(MatrixIndex index) => source[Coord2Index(index)];
         #nullable enable
@@ -28,6 +30,9 @@ namespace UnityUtility.Collections
             }
             return source[Coord2Index(destinationIndex)];
         }
+
+        public int RowSize => rowSize;
+        public int ColumnSize => columnSize;
         #nullable disable
         public bool TryGet(MatrixIndex index, out T value)
         {
@@ -57,11 +62,13 @@ namespace UnityUtility.Collections
 
         public void Set(T value, int row, int column) => source[Coord2Index(row, column)] = value;
         public void Set(T value, MatrixIndex index) => source[Coord2Index(index)] = value;
+        #endregion
 
+        #region private
         private int Coord2Index(MatrixIndex index) => Coord2Index(index.Row, index.Column);
         private int Coord2Index(int row, int column)
         {
-            if (row < 0 || rowSize <= row)       throw new ArgumentOutOfRangeException(nameof(row));
+            if (row < 0 || rowSize <= row) throw new ArgumentOutOfRangeException(nameof(row));
             if (column < 0 || columnSize <= column) throw new ArgumentOutOfRangeException(nameof(column));
             return row * columnSize + column;
         }
@@ -89,10 +96,14 @@ namespace UnityUtility.Collections
             if (index.Column < 0 || index.Column >= this.columnSize) return false;
             return IsValidIndex(Coord2Index(index));
         }
+        #endregion
 
+        #region IEnumerable
         public IEnumerator<T> GetEnumerator() => source.AsEnumerable().GetEnumerator();
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        #endregion
 
+        #region CustomEnumerator
         public IEnumerable<T> GetDirectionEnumerable(MatrixIndex origin, Direction8 direction)
         {
             int amount = 1;
@@ -101,5 +112,18 @@ namespace UnityUtility.Collections
                 yield return value;
             }
         }
+
+        public IEnumerable<(T, MatrixIndex)> GetEnumeratorWithIndex()
+        {
+            for (int row = 0; row < rowSize; row++)
+            {
+                for (int column = 0; column < columnSize; column++)
+                {
+                    yield return (Get(row, column), new MatrixIndex(row, column));
+                }
+            }
+        }
+
+        #endregion
     }
 }

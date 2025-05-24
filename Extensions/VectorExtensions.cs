@@ -131,6 +131,28 @@ namespace UnityUtility.Extensions
         public static Vector3 AsZ(this int value) => new Vector3(0, 0, value);
         public static Vector3 AsZ(this float value) => new Vector3(0, 0, value);
         public static Vector3 AsZInt(this int value) => new Vector3Int(0, 0, value);
+
+        /// <summary>
+        /// 指定したVector2Intと自身のマンハッタン距離を計算します。
+        /// </summary>
+        /// <param name="a">基点となるVector2Int</param>
+        /// <param name="b">比較対象のVector2Int</param>
+        /// <returns>2点間のマンハッタン距離</returns>
+        public static int ManhattanDistance(this Vector2Int a, Vector2Int b)
+        {
+            return Abs(a.x - b.x) + Abs(a.y - b.y);
+        }
+
+        /// <summary>
+        /// 原点 (0,0) から指定したVector2Intまでのマンハッタン距離を計算します。
+        /// </summary>
+        /// <param name="v">距離を計算するVector2Int</param>
+        /// <returns>原点からのマンハッタン距離</returns>
+        public static int ManhattanDistance(this Vector2Int v)
+        {
+            // 原点(0,0)との差は、各成分の絶対値の合計となる
+            return Abs(v.x) + Abs(v.y);
+        }
     }
 
 }
